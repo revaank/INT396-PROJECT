@@ -1,0 +1,326 @@
+{
+  "Uttar Pradesh": {
+    "name": "Uttar Pradesh",
+    "rank": "#1",
+    "zone": "NORTH INDIA",
+    "dia": 620325,
+    "tob": 432523,
+    "alc": 421491,
+    "cluster": "Group B"
+  },
+  "Maharashtra": {
+    "name": "Maharashtra",
+    "rank": "#2",
+    "zone": "WEST INDIA",
+    "dia": 213034,
+    "tob": 178135,
+    "alc": 174692,
+    "cluster": "Group C"
+  },
+  "Madhya Pradesh": {
+    "name": "Madhya Pradesh",
+    "rank": "#3",
+    "zone": "CENTRAL INDIA",
+    "dia": 169107,
+    "tob": 102796,
+    "alc": 98900,
+    "cluster": "Group C"
+  },
+  "Rajasthan": {
+    "name": "Rajasthan",
+    "rank": "#4",
+    "zone": "NORTH INDIA",
+    "dia": 148007,
+    "tob": 128079,
+    "alc": 127284,
+    "cluster": "Group C"
+  },
+  "Bihar": {
+    "name": "Bihar",
+    "rank": "#5",
+    "zone": "EAST INDIA",
+    "dia": 146889,
+    "tob": 90887,
+    "alc": 88071,
+    "cluster": "Group C"
+  },
+  "Gujarat": {
+    "name": "Gujarat",
+    "rank": "#6",
+    "zone": "WEST INDIA",
+    "dia": 135370,
+    "tob": 132995,
+    "alc": 132289,
+    "cluster": "Group C"
+  },
+  "Tamil Nadu": {
+    "name": "Tamil Nadu",
+    "rank": "#7",
+    "zone": "SOUTH INDIA",
+    "dia": 97022,
+    "tob": 87517,
+    "alc": 87310,
+    "cluster": "Group B"
+  },
+  "West Bengal": {
+    "name": "West Bengal",
+    "rank": "#8",
+    "zone": "EAST INDIA",
+    "dia": 95221,
+    "tob": 85629,
+    "alc": 84559,
+    "cluster": "Group C"
+  },
+  "Andhra Pradesh": {
+    "name": "Andhra Pradesh",
+    "rank": "#9",
+    "zone": "SOUTH INDIA",
+    "dia": 88229,
+    "tob": 85989,
+    "alc": 85227,
+    "cluster": "Group C"
+  },
+  "Haryana": {
+    "name": "Haryana",
+    "rank": "#10",
+    "zone": "NORTH INDIA",
+    "dia": 77752,
+    "tob": 72649,
+    "alc": 71540,
+    "cluster": "Group C"
+  },
+  "Karnataka": {
+    "name": "Karnataka",
+    "rank": "#11",
+    "zone": "SOUTH INDIA",
+    "dia": 75958,
+    "tob": 70570,
+    "alc": 69885,
+    "cluster": "Group C"
+  },
+  "Delhi": {
+    "name": "Delhi",
+    "rank": "#12",
+    "zone": "NORTH INDIA",
+    "dia": 71731,
+    "tob": 53312,
+    "alc": 52240,
+    "cluster": "Group C"
+  },
+  "Telangana": {
+    "name": "Telangana",
+    "rank": "#13",
+    "zone": "SOUTH INDIA",
+    "dia": 69431,
+    "tob": 67992,
+    "alc": 67432,
+    "cluster": "Group C"
+  },
+  "Odisha": {
+    "name": "Odisha",
+    "rank": "#14",
+    "zone": "EAST INDIA",
+    "dia": 60112,
+    "tob": 58836,
+    "alc": 58070,
+    "cluster": "Group C"
+  },
+  "Jharkhand": {
+    "name": "Jharkhand",
+    "rank": "#15",
+    "zone": "EAST INDIA",
+    "dia": 58115,
+    "tob": 48361,
+    "alc": 46965,
+    "cluster": "Group A"
+  },
+  "Punjab": {
+    "name": "Punjab",
+    "rank": "#16",
+    "zone": "NORTH INDIA",
+    "dia": 52724,
+    "tob": 49093,
+    "alc": 48406,
+    "cluster": "Group C"
+  },
+  "Assam": {
+    "name": "Assam",
+    "rank": "#17",
+    "zone": "NORTHEAST",
+    "dia": 46094,
+    "tob": 41088,
+    "alc": 40016,
+    "cluster": "Group A"
+  },
+  "Chhattisgarh": {
+    "name": "Chhattisgarh",
+    "rank": "#18",
+    "zone": "CENTRAL INDIA",
+    "dia": 35425,
+    "tob": 30332,
+    "alc": 29124,
+    "cluster": "Group A"
+  },
+  "Uttarakhand": {
+    "name": "Uttarakhand",
+    "rank": "#19",
+    "zone": "NORTH INDIA",
+    "dia": 25574,
+    "tob": 25328,
+    "alc": 25060,
+    "cluster": "Group A"
+  },
+  "Kerala": {
+    "name": "Kerala",
+    "rank": "#20",
+    "zone": "SOUTH INDIA",
+    "dia": 21022,
+    "tob": 19565,
+    "alc": 19396,
+    "cluster": "Group C"
+  },
+  "Himachal Pradesh": {
+    "name": "Himachal Pradesh",
+    "rank": "#21",
+    "zone": "NORTH INDIA",
+    "dia": 15861,
+    "tob": 15527,
+    "alc": 15375,
+    "cluster": "Group A"
+  },
+  "Jammu and Kashmir": {
+    "name": "Jammu and Kashmir",
+    "rank": "#22",
+    "zone": "NORTH INDIA",
+    "dia": 11205,
+    "tob": 10827,
+    "alc": 10714,
+    "cluster": "Group A"
+  },
+  "Meghalaya": {
+    "name": "Meghalaya",
+    "rank": "#23",
+    "zone": "NORTHEAST",
+    "dia": 4199,
+    "tob": 4203,
+    "alc": 4124,
+    "cluster": "Group A"
+  },
+  "Nagaland": {
+    "name": "Nagaland",
+    "rank": "#24",
+    "zone": "NORTHEAST",
+    "dia": 3794,
+    "tob": 3755,
+    "alc": 3730,
+    "cluster": "Group A"
+  },
+  "Chandigarh": {
+    "name": "Chandigarh",
+    "rank": "#25",
+    "zone": "NORTH INDIA",
+    "dia": 3617,
+    "tob": 3563,
+    "alc": 3554,
+    "cluster": "Group A"
+  },
+  "Tripura": {
+    "name": "Tripura",
+    "rank": "#26",
+    "zone": "NORTHEAST",
+    "dia": 3426,
+    "tob": 2122,
+    "alc": 2046,
+    "cluster": "Group A"
+  },
+  "Mizoram": {
+    "name": "Mizoram",
+    "rank": "#27",
+    "zone": "NORTHEAST",
+    "dia": 2224,
+    "tob": 2180,
+    "alc": 2179,
+    "cluster": "Group A"
+  },
+  "Manipur": {
+    "name": "Manipur",
+    "rank": "#28",
+    "zone": "NORTHEAST",
+    "dia": 2031,
+    "tob": 1755,
+    "alc": 1778,
+    "cluster": "Group A"
+  },
+  "Arunachal Pradesh": {
+    "name": "Arunachal Pradesh",
+    "rank": "#29",
+    "zone": "NORTHEAST",
+    "dia": 1930,
+    "tob": 1908,
+    "alc": 1873,
+    "cluster": "Group A"
+  },
+  "Goa": {
+    "name": "Goa",
+    "rank": "#30",
+    "zone": "WEST INDIA",
+    "dia": 1905,
+    "tob": 1655,
+    "alc": 1641,
+    "cluster": "Group A"
+  },
+  "Puducherry": {
+    "name": "Puducherry",
+    "rank": "#31",
+    "zone": "SOUTH INDIA",
+    "dia": 1578,
+    "tob": 1512,
+    "alc": 1505,
+    "cluster": "Group A"
+  },
+  "Sikkim": {
+    "name": "Sikkim",
+    "rank": "#32",
+    "zone": "NORTHEAST",
+    "dia": 1337,
+    "tob": 1158,
+    "alc": 1056,
+    "cluster": "Group A"
+  },
+  "Dadra and Nagar Haveli and Daman and Diu": {
+    "name": "Dadra and Nagar Haveli and Daman and Diu",
+    "rank": "#33",
+    "zone": "NORTH INDIA",
+    "dia": 863,
+    "tob": 509,
+    "alc": 526,
+    "cluster": "Group A"
+  },
+  "Andaman and Nicobar Islands": {
+    "name": "Andaman and Nicobar Islands",
+    "rank": "#34",
+    "zone": "NORTH INDIA",
+    "dia": 518,
+    "tob": 463,
+    "alc": 466,
+    "cluster": "Group A"
+  },
+  "Ladakh": {
+    "name": "Ladakh",
+    "rank": "#35",
+    "zone": "NORTH INDIA",
+    "dia": 301,
+    "tob": 258,
+    "alc": 249,
+    "cluster": "Group A"
+  },
+  "Lakshadweep": {
+    "name": "Lakshadweep",
+    "rank": "#36",
+    "zone": "NORTH INDIA",
+    "dia": 13,
+    "tob": 13,
+    "alc": 13,
+    "cluster": "Group A"
+  }
+}
