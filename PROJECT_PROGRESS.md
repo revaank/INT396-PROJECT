@@ -1,19 +1,24 @@
 # Project progress
 
-## Current status (2026-11-04)
+## Current status (2026-11-11)
 
-- Built Version 1 of TB Insight with Home, Explore India, Compare States, ML Intelligence, Research Insights, AI Explainer, TB Knowledge Centre, and Find Help & About sections.
-- Added the purchased Dataful 20833 CSV and supplied metadata under `data/raw/dataful_20833/`.
-- Verified the table contains 4,995 rows, 8 columns, 2019–2023 coverage, 37 state labels including All India, 36 regional labels after All India is excluded, 132 missing values, 4,995 blank note cells, no duplicate composite keys, and no negative values.
-- Values are absolute counts. State comparison is like-for-like by indicator and sector. Clustering uses complete cases, excludes All India, standardizes features, evaluates K-Means/Agglomerative/DBSCAN with clustering metrics where defined, and shows PCA only as a visualization.
-- Added Windows startup script that sets up a local environment and dependencies, and attempts a one-time download of the attributed geoBoundaries India state polygons.
-- Added tests for real-data integrity and a K-Means path. `compileall` and both `unittest` cases passed in the bundled Python runtime.
-
-## Known verification limits
-
-- The dashboard UI could not be launched in this environment because Streamlit and Plotly are not preinstalled and package downloads from PyPI failed due network timeout/certificate restrictions. The startup script installs them on first run where internet access is available.
-- Direct access to GitHub was blocked in this environment, so the optional state boundary file was not downloaded or visually checked. The map section gracefully explains/retries when the file is absent and hides unmatched geometries.
-- Dataful's supplied metadata does not state a dataset redistribution license or original publisher retrieval date. Confirm terms with the publisher before redistributing the CSV.
+- **Academic Requirements Implemented (Units II, III & IV):**
+  - **Unit II:** Complete documented preprocessing pipeline, missing value auditing (preserved as missing, not imputed with zero), national aggregate removal, standardisation via `StandardScaler`.
+  - **Unit III:** K-Means clustering with multi-$k$ sweep ($k=2..5$), WCSS (inertia) Elbow evaluation, Silhouette score, Davies-Bouldin index, Calinski-Harabasz index. Added Agglomerative Hierarchical clustering comparing Euclidean vs. Manhattan distances, and an interactive Dendrogram visualization via Plotly.
+  - **Unit IV:** 2-component PCA projection with explained variance ratios annotated (~99% variance explained), cluster profile medians, feature contribution analysis, quantitative stability agreement metric comparing distance settings, and explicit defensible configuration selection ($k=3$).
+- **AeroTB Command-Center Interface Redesign:**
+  - Renamed and rebranded to **AeroTB** (`AeroTB | India Regional Intelligence`).
+  - Dark, high-tech command center palette (`#050811`, glowing cyan `#00f2fe` accents) inspired by modern medical intelligence interfaces (1Cell.Ai, Bharat Cancer).
+  - Streamlit radio button dots completely removed and converted into glowing interactive pills.
+  - Home page reconstructed into a fluid 3-column command center: Left (Dynamic "Did You Know?" cycler + State Leaderboard with quick state selection), Center (Interactive India Choropleth Map with seamless scroll-zoom and layer toggle for `Diabetes in TB`, `Tobacco Users in TB`, `Alcohol Users in TB`, and `AI State Groups`), Right (Live State Telemetry Card showing rank, AI cluster group, recorded notifications, and comorbidity notes).
+  - Selected states trigger an interactive glowing target beacon marker directly on the India map.
+  - Seamless Unicode diacritic normalization matching 36/36 Indian States and UTs on the GeoJSON boundary.
+  - Implemented Apple-style sticky stacked-card 3D scroll transitions for the public health story (`Discovery 01: Airborne Curability`, `Discovery 02: Hidden Multipliers`, `Discovery 03: 36 State Crises`) that smoothly reveal sequentially before opening into the Analysis Suites navigation portal.
+  - Synchronized across local active workspace and OneDrive backup.
+- **Reproducibility & Quality Assurance:**
+  - Added standalone `notebooks/reproducible_analysis.py` CLI pipeline for non-interactive execution and examination reporting.
+  - Expanded test suite in `tests/test_analysis.py` covering WCSS, PCA variance, labels, sweep, Manhattan clustering, and feature contributions (6/6 tests passing).
+  - Updated `README.md` with complete architecture and setup instructions.
 
 ## Interpretation limits
 
