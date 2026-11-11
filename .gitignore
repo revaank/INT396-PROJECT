@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.py[cod]
+.streamlit/secrets.toml
+data/raw/dataful_20833/india_admin1.geojson
+data/raw/*.pdf
+data/raw/dataful_20833/*.csv

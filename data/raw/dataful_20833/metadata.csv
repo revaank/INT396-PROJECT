@@ -1,0 +1,10 @@
+organisation,Ministry of Health and Family Welfare
+sectors,"Health and Family Welfare"
+updated_frequency,Yearly
+granularity,"Yearly, State"
+time_saved,6 hours
+source,"Annual Reports- Central Tuberculosis Division"
+source_link,"https://tbcindia.mohfw.gov.in/annual-reports/"
+time_period,"2019 to 2023"
+units,"value in absolute number"
+citation,"Ministry of Health and Family Welfare. Year, State, Sector and Risk Factor wise cases of TB [Data set]. Dataful. https://dataful.in/datasets/20833/20833"
