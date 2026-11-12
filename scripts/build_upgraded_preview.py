@@ -1414,7 +1414,7 @@ html_template = f"""<!DOCTYPE html>
         <!-- ACTION BUTTONS -->
         <div class="card-action-bar">
           <button class="btn-action btn-print" onclick="window.print()" title="Export clinical summary">📄 Print Dossier</button>
-          <button class="btn-action btn-lab" onclick="navigateTo('clusters')" title="Explore similar states and health teams">👥 Explore Similarity</button>
+          <button class="btn-action btn-lab" onclick="navigateTo('compare')" title="Compare this state with neighbors in detail">📈 Compare State →</button>
         </div>
       </div>
     </aside>
@@ -1544,16 +1544,16 @@ html_template = f"""<!DOCTYPE html>
     </div>
 
     <div class="portal-grid">
-      <div class="portal-card" onclick="navigateTo('clusters')">
-        <div class="portal-tag">Module 01 · Find State "Twins"</div>
-        <div class="portal-title">👥 State Similarity Lab</div>
-        <div class="portal-desc">Find which Indian states face the exact same TB challenge. The AI compares and groups all 36 states into 3 similar "teams" so doctors and governments can share solutions.</div>
+      <div class="portal-card" onclick="navigateTo('compare')">
+        <div class="portal-tag">Module 01 · Side-by-Side Analysis</div>
+        <div class="portal-title">📈 Compare States</div>
+        <div class="portal-desc">Put up to 6 states side-by-side to track and compare their 5-year notification trajectories from 2019 to 2023.</div>
       </div>
 
-      <div class="portal-card" onclick="navigateTo('compare')">
-        <div class="portal-tag">Module 02</div>
-        <div class="portal-title">📈 Compare States</div>
-        <div class="portal-desc">Put up to 6 neighboring states side-by-side to track their 5-year notification trajectories from 2019 to 2023.</div>
+      <div class="portal-card" onclick="navigateTo('clusters')">
+        <div class="portal-tag">Module 02 · Find State "Twins"</div>
+        <div class="portal-title">👥 State Similarity Lab</div>
+        <div class="portal-desc">Let AI discover which states face the exact same TB challenge. Unsupervised clustering groups all 36 states into 3 similar "teams".</div>
       </div>
 
       <div class="portal-card" onclick="navigateTo('explainer')">
