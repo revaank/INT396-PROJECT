@@ -1245,11 +1245,6 @@ html_template = f"""<!DOCTYPE html>
     </div>
 
     <div class="header-actions">
-      <nav class="nav-pill-group">
-        <a href="#hero" class="nav-pill active">🗺️ Command Map</a>
-        <a href="#story" class="nav-pill">📖 3D Story</a>
-        <a href="#modules" class="nav-pill">🔬 Modules</a>
-      </nav>
       <div class="provenance-badge">
         <div class="status-pulse"></div>
         <span>MoHFW / Ni-kshay Verified (N=36)</span>
