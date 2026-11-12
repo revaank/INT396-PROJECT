@@ -383,6 +383,14 @@ html_template = f"""<!DOCTYPE html>
     overflow: hidden;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
   }}
+  .lb-section-header {{
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }}
   .filter-chips {{
     display: flex;
     gap: 4px;
@@ -395,8 +403,8 @@ html_template = f"""<!DOCTYPE html>
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: #94a3b8;
     border-radius: 6px;
-    padding: 3px 8px;
-    font-size: 0.65rem;
+    padding: 4px 10px;
+    font-size: 0.63rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.15s;
@@ -1101,12 +1109,13 @@ html_template = f"""<!DOCTYPE html>
 
       <!-- SEARCH & LEADERBOARD WITH FILTER CHIPS -->
       <div class="leaderboard">
+        <div class="lb-section-header">Filter states by group</div>
         <div class="filter-chips">
-          <button class="filter-chip active" onclick="filterByGroup('all')">All (36)</button>
+          <button class="filter-chip active" onclick="filterByGroup('all')">All States</button>
           <button class="filter-chip" onclick="filterByGroup('top10')">Top 10</button>
-          <button class="filter-chip" onclick="filterByGroup('group-b')">Grp B (2)</button>
-          <button class="filter-chip" onclick="filterByGroup('group-c')">Grp C (13)</button>
-          <button class="filter-chip" onclick="filterByGroup('group-a')">Grp A (21)</button>
+          <button class="filter-chip" onclick="filterByGroup('group-b')">Outliers</button>
+          <button class="filter-chip" onclick="filterByGroup('group-c')">High Burden</button>
+          <button class="filter-chip" onclick="filterByGroup('group-a')">Lower Burden</button>
         </div>
 
         <div class="search-wrap">
