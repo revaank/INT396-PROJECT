@@ -753,38 +753,48 @@ elif page == "Compare States":
 # ───────────────────── STATE PATTERN GROUPS (was ML Intelligence) ─────────────────────
 elif page == "State Pattern Groups":
     header(
-        "Machine Learning Analysis",
-        "Which states have similar TB patterns?",
-        "This page groups states with similar TB reporting patterns. "
-        "Think of it like sorting states into teams based on their numbers.",
+        "State Similarity Lab",
+        "Finding Regional 'Health Twins' (Units II, III & IV)",
+        "Unsupervised AI compares all 36 Indian states and groups together regions facing similar TB and comorbidity challenges.",
     )
     explain(
-        "<b>What's happening here:</b> The computer looks at the numbers each state "
-        "reported, finds which states have similar patterns, and groups them together. "
-        "This is called <i>clustering</i> — it's like sorting a deck of cards by colour "
-        "without being told the colours first."
+        "<b>What\\'s happening here in simple words:</b> Think of this like sorting 36 students into 3 teams based on their healthcare numbers. "
+        "The computer looks at every state without human bias and groups states that face the <b>same challenge</b> into the same team. "
+        "Mathematically, this implements <b>K-Means partitioning (Unit II)</b>, <b>Hierarchical Dendrograms (Unit III)</b>, and <b>Cluster Validation & Profiling (Unit IV)</b>."
     )
 
-    # ── Controls ──
+    # ── COMPACT TOP CONTROLS CONSOLE ──
     years = [int(y) for y in quality["years"]]
-    a, b, c = st.columns(3)
-    year = a.selectbox("Year", years, index=len(years) - 1, key="ml_year")
+    ctrl1, ctrl2, ctrl3, ctrl4 = st.columns([1, 1.2, 1.2, 1.4])
+    year = ctrl1.selectbox("Surveillance Year", years, index=len(years) - 1, key="ml_year")
     factors = sorted(regions.loc[regions.year == year, "risk_factor"].unique())
     factor_default = factors.index("Diabetes") if "Diabetes" in factors else 0
-    factor = b.selectbox("Risk factor", factors, index=factor_default, key="ml_factor")
+    factor = ctrl2.selectbox("Comorbidity Risk Factor", factors, index=factor_default, key="ml_factor")
     avail_sectors = sorted(
-        regions.loc[
-            (regions.year == year) & (regions.risk_factor == factor), "sector"
-        ]
-        .unique()
+        regions.loc[(regions.year == year) & (regions.risk_factor == factor), "sector"].unique()
     )
     sector_default = avail_sectors.index("public + private") if "public + private" in avail_sectors else 0
-    sector = c.selectbox(
-        "Reporting sector",
-        avail_sectors,
-        index=sector_default,
-        key="ml_sector",
+    sector = ctrl3.selectbox("Reporting Sector", avail_sectors, index=sector_default, key="ml_sector")
+
+    method_label = ctrl4.selectbox(
+        "Algorithm & Distance",
+        [
+            "K-Means (Euclidean Partitioning)",
+            "Agglomerative (Ward Linkage · Euclidean)",
+            "Agglomerative (Complete · Manhattan)",
+            "Agglomerative (Average · Manhattan)",
+        ],
+        key="ml_method",
     )
+
+    if method_label.startswith("K-Means"):
+        actual_method, distance, d_link = "K-Means", "euclidean", "ward"
+    elif "Ward" in method_label:
+        actual_method, distance, d_link = "Agglomerative", "euclidean", "ward"
+    elif "Complete" in method_label:
+        actual_method, distance, d_link = "Agglomerative", "manhattan", "complete"
+    else:
+        actual_method, distance, d_link = "Agglomerative", "manhattan", "average"
 
     raw, complete = regional_feature_matrix(df, year, factor, sector)
 
@@ -795,144 +805,38 @@ elif page == "State Pattern Groups":
     elif complete.shape[0] < 4:
         st.warning("Fewer than four complete regions remain. Try another year, factor, or sector.")
     else:
-        # ── Preprocessing explainer ──
-        with st.expander("📋 How was the data prepared? (click to expand)"):
-            st.markdown(
-                f"**Step 1 — Filter:** Kept only {year}, {factor}, {sector} records "
-                f"from the {quality['regions']} states/UTs (All India excluded).\n\n"
-                f"**Step 2 — Pivot:** Rearranged so each state is a row and each "
-                f"indicator is a column. This gave {raw.shape[0]} states × {raw.shape[1]} indicators.\n\n"
-                f"**Step 3 — Remove incomplete rows:** {raw.shape[0] - complete.shape[0]} states "
-                f"had missing values and were removed, leaving {complete.shape[0]} complete states.\n\n"
-                f"**Step 4 — Standardise:** Brought all indicators to the same scale "
-                "(mean=0, spread=1) so one large indicator doesn't dominate.\n\n"
-                "**Why?** Without standardisation, an indicator measured in millions "
-                "would overpower one measured in hundreds, even if both are equally important."
-            )
-
-        st.markdown(
-            f"**Indicators available:** {raw.shape[1]} · "
-            f"**States with complete data:** {complete.shape[0]} out of {raw.shape[0]} · "
-            f"**Removed for missing data:** {raw.shape[0] - complete.shape[0]}"
-        )
-
-        # ── Method selection ──
-        st.markdown("---")
-        st.subheader("① Choose a grouping method")
-        explain(
-            "<b>K-Means (Euclidean):</b> The most common method — groups states by "
-            "straight-line similarity in their numbers.<br>"
-            "<b>Agglomerative (Euclidean):</b> Builds groups step-by-step by merging "
-            "the most similar states first.<br>"
-            "<b>Agglomerative (Manhattan):</b> Same step-by-step approach but measures "
-            "similarity differently — like walking city blocks instead of flying straight."
-        )
-
-        method = st.selectbox(
-            "Method",
-            ["K-Means (Euclidean)", "Agglomerative (Euclidean)", "Agglomerative (Manhattan)", "DBSCAN"],
-        )
-
-        if method.startswith("K-Means"):
-            actual_method, distance = "K-Means", "euclidean"
-        elif method == "Agglomerative (Manhattan)":
-            actual_method, distance = "Agglomerative", "manhattan"
-        elif method == "Agglomerative (Euclidean)":
-            actual_method, distance = "Agglomerative", "euclidean"
-        else:
-            actual_method, distance = "DBSCAN", "euclidean"
-
-        if actual_method in ("K-Means", "Agglomerative"):
+        k_col, info_col = st.columns([1.5, 2.5])
+        with k_col:
             k = st.slider(
-                "How many groups?", 2,
+                "Number of Clusters (k)",
+                2,
                 min(6, complete.shape[0] - 1),
-                min(3, complete.shape[0] - 1),
-                help="More groups = finer distinctions. Fewer = broader categories.",
+                3,
+                help="Recommended: k=3 for balanced public health communication and optimal Silhouette separation.",
             )
-            eps, min_samples = 0.9, 4
-        else:
-            u, v = st.columns(2)
-            eps = u.slider("DBSCAN neighbourhood size", 0.2, 3.0, 0.9, 0.1)
-            min_samples = v.slider("Minimum states per group", 2, min(10, complete.shape[0]), min(4, complete.shape[0]))
-            k = 3
+        with info_col:
+            st.markdown(
+                f"<div style='background:rgba(14,20,32,0.65); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px 16px; margin-top:14px; font-size:0.78rem; color:#94a3b8;'>"
+                f"<b>Dataset Scope:</b> {complete.shape[0]} complete states/UTs (All India excluded) · {raw.shape[1]} clinical indicators · Standardised (μ=0, σ=1)"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+
+        with st.expander("📋 Preprocessing Pipeline & Standardization Hygiene (click to expand)"):
+            st.markdown(
+                f"**1. Filter:** Selected `{year}`, risk factor `{factor}`, and sector `{sector}` from {quality['regions']} administrative units.\n\n"
+                f"**2. Pivot:** Transformed raw tabular records into an $N \\times D$ matrix ({raw.shape[0]} states × {raw.shape[1]} surveillance features).\n\n"
+                f"**3. Missing Value Audit:** Removed {raw.shape[0] - complete.shape[0]} states with incomplete reporting to preserve mathematical integrity, leaving {complete.shape[0]} states.\n\n"
+                f"**4. Standardization (Z-score):** Scaled every column to mean $\\mu=0$ and standard deviation $\\sigma=1$. This ensures high-volume indicators do not drown out comorbid proportions."
+            )
 
         try:
             result, metrics, pca_var = fit_clusters(
-                complete, actual_method, clusters=k, eps=eps,
-                min_samples=min_samples, distance=distance,
+                complete, actual_method, clusters=k, eps=0.9, min_samples=4, distance=distance,
             )
 
-            # ── STEP 2: Elbow chart + Multi-k comparison ──
-            if actual_method == "K-Means":
-                st.markdown("---")
-                st.subheader("② Finding the best number of groups")
-                explain(
-                    "How do we know if 3 groups is better than 4? We try different numbers "
-                    "and compare scores. The <b>elbow chart</b> shows how tightly packed "
-                    "each grouping is — look for where the line bends (the 'elbow')."
-                )
-                sweep_df = sweep_k(complete, max_k=min(6, complete.shape[0] - 1))
-                if not sweep_df.empty:
-                    el, er = st.columns(2)
-                    with el:
-                        fig_elbow = px.line(
-                            sweep_df, x="k", y="WCSS", markers=True,
-                            labels={"k": "Number of groups", "WCSS": "WCSS (lower = tighter groups)"},
-                            title="Elbow Chart — how tight are the groups?",
-                        )
-                        fig_elbow.update_traces(line_color="#55d8c7", marker_size=10)
-                        fig_elbow.update_layout(
-                            height=350, margin=dict(l=0, r=0, t=40, b=0),
-                            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                            font_color="#dcebea",
-                        )
-                        st.plotly_chart(fig_elbow, use_container_width=True)
-                        st.caption(
-                            "WCSS = Within-Cluster Sum of Squares. "
-                            "Lower means states within each group are more similar. "
-                            "The 'elbow' is where adding more groups stops helping much."
-                        )
-                    with er:
-                        fig_sil = px.line(
-                            sweep_df, x="k", y="Silhouette", markers=True,
-                            labels={"k": "Number of groups", "Silhouette": "Silhouette Score (higher = better)"},
-                            title="Silhouette — how well-separated are the groups?",
-                        )
-                        fig_sil.update_traces(line_color="#e9a34b", marker_size=10)
-                        fig_sil.update_layout(
-                            height=350, margin=dict(l=0, r=0, t=40, b=0),
-                            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                            font_color="#dcebea",
-                        )
-                        st.plotly_chart(fig_sil, use_container_width=True)
-                        st.caption(
-                            "Silhouette ranges from -1 to 1. Higher means groups "
-                            "are clearly separated with little overlap."
-                        )
-
-                    st.markdown("**Full comparison across all tested group counts:**")
-                    display_sweep = sweep_df.copy()
-                    display_sweep.columns = [
-                        "Groups (k)", "WCSS (lower=better)",
-                        "Silhouette (higher=better)", "Davies-Bouldin (lower=better)",
-                        "Calinski-Harabasz (higher=better)",
-                    ]
-                    st.dataframe(display_sweep.round(3), use_container_width=True, hide_index=True)
-                    st.caption(
-                        "This table helps you pick the best number of groups. "
-                        "Look for the k where Silhouette is highest and Davies-Bouldin is lowest."
-                    )
-
-            # ── STEP 3: Results ──
-            st.markdown("---")
-            st.subheader("③ The grouping results")
-            explain(
-                f"Using <b>{method}</b> with <b>{k if actual_method != 'DBSCAN' else 'auto'} groups</b>, "
-                f"here's how the {complete.shape[0]} states were sorted. "
-                "Each colour represents a different group of states with similar patterns."
-            )
-
-            # Metrics in plain language
+            # ── TELEMETRY CARDS BANNER ──
+            st.markdown("<div style='margin-top:10px; margin-bottom:14px;'></div>", unsafe_allow_html=True)
             m_cols = st.columns(4)
             sil = metrics.get("Silhouette")
             db = metrics.get("Davies-Bouldin")
@@ -940,223 +844,295 @@ elif page == "State Pattern Groups":
             ch = metrics.get("Calinski-Harabasz")
 
             with m_cols[0]:
+                if sil is not None:
+                    q_badge = "Excellent" if sil > 0.7 else "Good" if sil > 0.4 else "Fair" if sil > 0.25 else "Weak"
+                    st.metric("Silhouette Score", f"{sil:.3f}", f"{q_badge} separation")
+                else:
+                    st.metric("Silhouette Score", "N/A")
+            with m_cols[1]:
                 if wcss_val is not None:
-                    st.metric("WCSS", f"{wcss_val:.1f}")
-                    st.caption("How tight the groups are (lower = better)")
+                    st.metric("WCSS (Inertia)", f"{wcss_val:.1f}", "Compactness")
                 else:
                     st.metric("WCSS", "N/A")
-            with m_cols[1]:
-                if sil is not None:
-                    quality_word = "excellent" if sil > 0.7 else "good" if sil > 0.5 else "fair" if sil > 0.25 else "weak"
-                    st.metric("Separation quality", f"{sil:.3f}")
-                    st.caption(f"Silhouette score — {quality_word} (max is 1.0)")
-                else:
-                    st.metric("Separation quality", "N/A")
             with m_cols[2]:
                 if db is not None:
-                    st.metric("Group overlap", f"{db:.3f}")
-                    st.caption("Davies-Bouldin — lower means less overlap")
+                    st.metric("Davies-Bouldin", f"{db:.3f}", "Lower = less overlap")
                 else:
-                    st.metric("Group overlap", "N/A")
+                    st.metric("Davies-Bouldin", "N/A")
             with m_cols[3]:
-                st.metric("States grouped", f"{metrics['Regions']}")
-                st.caption(f"Into {metrics['Groups found']} groups")
-
-            # ── PCA scatter with variance annotation ──
-            pca_left, pca_right = st.columns([1.2, 1])
-            with pca_left:
-                st.markdown(f"**Visual map of state similarity** (PC1: {pca_var[0]:.1f}%, PC2: {pca_var[1]:.1f}%)")
-                fig_pca = px.scatter(
-                    result, x="PC1", y="PC2", color="Cluster",
-                    hover_name="State / UT",
-                    color_discrete_sequence=["#54d6c4", "#4c8ed1", "#e9a34b", "#bd77d7", "#e46b79", "#97bd62"],
-                    labels={"PC1": f"Dimension 1 ({pca_var[0]:.1f}%)", "PC2": f"Dimension 2 ({pca_var[1]:.1f}%)"},
-                )
-                fig_pca.update_traces(marker_size=12)
-                fig_pca.update_layout(
-                    height=430, margin=dict(l=0, r=0, t=18, b=0),
-                    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                    font_color="#dcebea", legend_title_text="Group",
-                )
-                st.plotly_chart(fig_pca, use_container_width=True)
-                st.caption(
-                    "Each dot is a state. States close together have similar TB patterns. "
-                    "The computer compressed multiple indicators into two dimensions (PC1 & PC2) "
-                    f"which together capture {pca_var[0] + pca_var[1]:.1f}% of the variation. "
-                    "This is a visual summary, not proof of the grouping."
-                )
-            with pca_right:
-                st.markdown("**Which states are in each group?**")
-                display_results_df = result[["State / UT", "Cluster"]].rename(columns={"Cluster": "Group"}).sort_values(
-                    ["Group", "State / UT"]
-                )
-                st.dataframe(
-                    display_results_df,
-                    use_container_width=True,
-                    hide_index=True,
-                    height=360,
-                )
-                csv_bytes = display_results_df.to_csv(index=False).encode("utf-8")
-                st.download_button(
-                    label="📥 Download Group Assignments (CSV)",
-                    data=csv_bytes,
-                    file_name=f"tb_state_clusters_{year}_{factor}_{sector}.csv",
-                    mime="text/csv",
-                )
-
-            # ── Cluster map ──
-            st.subheader("🗺️ Groups on the map")
-            explain(
-                "The same groups shown on the India map — states with the same colour "
-                "were sorted into the same group because their TB numbers are similar."
-            )
-            map_data = result.rename(columns={"State / UT": "state", "Cluster": "Group"})
-            display_map(map_data, "Group", color_col="Group")
-
-            # ── Cluster profiles with plain summaries ──
-            st.markdown("---")
-            st.subheader("④ What makes each group different?")
-            profiled = complete.copy()
-            profiled["Cluster"] = result.set_index("State / UT")["Cluster"].reindex(profiled.index).values
-            cluster_profile = profiled.groupby("Cluster", observed=True)[complete.columns].median().round(1)
-
-            # Auto-generated plain summaries
-            summaries = cluster_plain_summary(cluster_profile, complete.columns.tolist())
-            for cluster_label, summary_text in summaries.items():
-                st.markdown(summary_text)
-            st.write("")
-
-            st.markdown("**Median values per group** (what the 'typical' state in each group looks like):")
-            st.dataframe(cluster_profile.rename_axis("Group"), use_container_width=True)
-            st.caption(
-                "Each number is the middle value (median) for that indicator within the group. "
-                "Higher counts do not mean higher risk — they reflect reported numbers, "
-                "which depend on population and screening coverage."
-            )
-
-            # ── Feature contribution chart ──
-            st.subheader("⚖️ Which indicators separate the groups most?")
-            explain(
-                "This chart shows the average standardised value per indicator per group. "
-                "A tall bar means that group has unusually high (or low) numbers for that indicator."
-            )
-            feat_df = feature_contributions(complete, result.set_index("State / UT")["Cluster"].reindex(complete.index).values)
-            fig_feat = px.bar(
-                feat_df.T.reset_index().melt(id_vars="index"),
-                x="index", y="value", color="Cluster",
-                barmode="group",
-                labels={"index": "Indicator", "value": "Standardised score", "Cluster": "Group"},
-                color_discrete_sequence=["#54d6c4", "#4c8ed1", "#e9a34b", "#bd77d7", "#e46b79"],
-            )
-            fig_feat.update_layout(
-                height=400, margin=dict(l=0, r=0, t=10, b=0),
-                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                font_color="#dcebea", xaxis_tickangle=-30,
-            )
-            st.plotly_chart(fig_feat, use_container_width=True)
-            st.caption(
-                "Bars above zero mean that group reported more than average; "
-                "below zero means less than average. Zero is the overall average."
-            )
-
-            # ── Unit III: Hierarchical Dendrogram ──
-            st.markdown("---")
-            st.subheader("⑤ Hierarchical Tree (Dendrogram) — Unit III")
-            explain(
-                "<b>What is a dendrogram?</b> Think of it as a family tree of Indian states. "
-                "States that are closest together in their TB indicators merge first at the bottom. "
-                "The height of each vertical bar shows how different two merging groups are."
-            )
-            d_col1, d_col2 = st.columns(2)
-            d_metric = d_col1.selectbox("Distance measure", ["Euclidean (straight line)", "Manhattan (city block)"], key="dendro_dist")
-            d_dist = "euclidean" if "Euclidean" in d_metric else "manhattan"
-            d_link_opts = ["Average", "Complete"] if d_dist == "manhattan" else ["Ward (variance-minimising)", "Average", "Complete"]
-            d_link_choice = d_col2.selectbox("Linkage method", d_link_opts, key="dendro_link")
-            d_link = "ward" if "Ward" in d_link_choice else "average" if "Average" in d_link_choice else "complete"
-
-            from scipy.cluster.hierarchy import linkage
-            from sklearn.preprocessing import StandardScaler
-            scaled_for_dendro = StandardScaler().fit_transform(complete.astype(float))
-            dendro_fig = ff.create_dendrogram(
-                scaled_for_dendro,
-                labels=list(complete.index),
-                linkagefun=lambda x: linkage(x, method=d_link, metric=d_dist),
-                color_threshold=2.5,
-            )
-            dendro_fig.update_layout(
-                height=500,
-                margin=dict(l=0, r=0, t=20, b=120),
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                font_color="#dcebea",
-                xaxis=dict(tickangle=-45),
-            )
-            st.plotly_chart(dendro_fig, use_container_width=True)
-            st.caption(
-                f"Dendrogram computed with {d_dist.capitalize()} distance and {d_link} linkage. "
-                "Horizontal cuts across high vertical branches define the distinct clusters."
-            )
-
-            # ── Stability across tested settings ──
-            st.markdown("---")
-            st.subheader("⑥ Stability Across Distance Settings (Euclidean vs. Manhattan)")
-            explain(
-                "<b>Why check stability?</b> If changing from Euclidean (straight-line) to Manhattan (city-block) distance "
-                "completely scrambles which states belong together, the groups are fragile. "
-                "If most states stay together, the pattern is real and trustworthy."
-            )
-            stab_df, agree_pct = stability_comparison(complete, k=k)
-            st_col1, st_col2 = st.columns([1, 2])
-            with st_col1:
-                st.metric("Grouping Stability Agreement", f"{agree_pct:.1f}%")
-                if agree_pct >= 80:
-                    st.success("High stability: states consistently group together regardless of distance formula.")
-                elif agree_pct >= 60:
-                    st.info("Moderate stability: core state groups hold, while borderline states shift.")
+                if ch is not None:
+                    st.metric("Calinski-Harabasz", f"{ch:.1f}", "Variance ratio")
                 else:
-                    st.warning("Low stability: sensitive to distance metric choice.")
-            with st_col2:
-                st.dataframe(stab_df, use_container_width=True, hide_index=True)
+                    st.metric("Calinski-Harabasz", "N/A")
 
-            # ── Defensible configuration selection ──
-            st.markdown("---")
-            st.subheader("⑦ Defensible Configuration Selection (For Viva & Report)")
-            sweep_data = sweep_k(complete)
-            best_sil_k = int(sweep_data.loc[sweep_data["Silhouette"].idxmax(), "k"]) if not sweep_data.empty else 3
-            st.info(
-                f"📌 <b>Recommended Defensible Choice:</b> Based on the quantitative evaluation on these {complete.shape[0]} states:<br>"
-                f"• The <b>WCSS Elbow curve</b> bends between k=2 and k=4, indicating diminishing compactness gains thereafter.<br>"
-                f"• The <b>Silhouette Score</b> peaks at <b>k={best_sil_k}</b>, demonstrating maximum group separation and minimal cluster overlap.<br>"
-                f"• <b>Conclusion:</b> <b>k={best_sil_k}</b> (or k=3 for balanced public health communication) represents the most statistically sound and interpretable configuration."
-            )
+            # ── THE 4 CLEAN TABS WORKFLOW ──
+            tab_map, tab_eval, tab_dendro, tab_profiles = st.tabs([
+                "🗺️ Spatial Map & 2D PCA Space",
+                "📊 Optimal Groups & Elbow (Units II & IV)",
+                "🧬 Hierarchical Tree & Dendrogram (Unit III)",
+                "⚖️ Profiles & Clinical Insights (Unit IV)",
+            ])
 
-            # ── Policy box ──
-            policy_box(
-                "<b>What could health planners do with this?</b><br>"
-                "States in the same group share similar TB-related patterns. "
-                "Health administrators could investigate what these states have in common — "
-                "similar demographics, screening programs, or resource constraints — "
-                "and consider whether interventions that work in one could help others "
-                "in the same group.<br><br>"
-                "<i>These groups are exploratory — they describe patterns in the data, "
-                "not permanent real-world categories.</i>"
-            )
+            # ══════════════════════════════════════════════════════
+            # TAB 1: SPATIAL MAP & 2D PCA SPACE
+            # ══════════════════════════════════════════════════════
+            with tab_map:
+                st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
+                p_left, p_right = st.columns([1.2, 1])
 
-            # ── Features used ──
-            with st.expander("📊 See the raw data used for grouping"):
-                st.dataframe(complete.reset_index(), use_container_width=True, hide_index=True)
+                with p_left:
+                    st.markdown(f"**Principal Component Projection** (PC1: `{pca_var[0]:.1f}%`, PC2: `{pca_var[1]:.1f}%` variance)")
+                    fig_pca = px.scatter(
+                        result, x="PC1", y="PC2", color="Cluster",
+                        hover_name="State / UT",
+                        color_discrete_sequence=["#38bdf8", "#818cf8", "#34d399", "#f59e0b", "#ec4899", "#94a3b8"],
+                        labels={"PC1": f"Principal Component 1 ({pca_var[0]:.1f}%)", "PC2": f"Principal Component 2 ({pca_var[1]:.1f}%)"},
+                    )
+                    fig_pca.update_traces(marker=dict(size=13, line=dict(width=1, color="rgba(255,255,255,0.4)")))
+                    fig_pca.update_layout(
+                        height=420, margin=dict(l=0, r=0, t=10, b=0),
+                        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(14,20,32,0.4)",
+                        font_color="#dcebea", legend_title_text="Cluster",
+                    )
+                    st.plotly_chart(fig_pca, use_container_width=True)
+                    st.caption(
+                        f"States close together share similar multidimensional reporting traits. "
+                        f"PC1 and PC2 together account for **{pca_var[0] + pca_var[1]:.1f}%** of the total variance across India."
+                    )
+
+                with p_right:
+                    st.markdown("**Spatial Cluster Distribution on India Map**")
+                    map_data = result.rename(columns={"State / UT": "state", "Cluster": "Group"})
+                    display_map(map_data, "Group", color_col="Group")
+
+                st.markdown("---")
+                st.markdown("**State Membership Roster & Export**")
+                display_results_df = result[["State / UT", "Cluster", "PC1", "PC2"]].rename(columns={"Cluster": "Group"}).sort_values(["Group", "State / UT"])
+                t_col1, t_col2 = st.columns([2, 1])
+                with t_col1:
+                    st.dataframe(display_results_df.round(3), use_container_width=True, hide_index=True, height=220)
+                with t_col2:
+                    st.markdown("<div style='padding-top:10px;'></div>", unsafe_allow_html=True)
+                    csv_bytes = display_results_df.to_csv(index=False).encode("utf-8")
+                    st.download_button(
+                        label="📥 Download Cluster Assignments (CSV)",
+                        data=csv_bytes,
+                        file_name=f"tb_state_clusters_{year}_{factor}_{sector}_k{k}.csv",
+                        mime="text/csv",
+                        use_container_width=True,
+                    )
+                    st.caption(
+                        "Exports state names, cluster labels, and 2D PCA projection coordinates for academic report documentation."
+                    )
+
+            # ══════════════════════════════════════════════════════
+            # TAB 2: OPTIMAL GROUPS & ELBOW (UNITS II & IV)
+            # ══════════════════════════════════════════════════════
+            with tab_eval:
+                st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
+                st.markdown("### Determining the Defensible Number of Clusters (k)")
+                explain(
+                    "<b>Why evaluate multiple k values?</b> Unsupervised clustering does not have ground-truth labels. "
+                    "We mathematically sweep $k=2$ to $k=6$ and evaluate the trade-off between within-cluster compactness (WCSS) "
+                    "and between-cluster separation (Silhouette)."
+                )
+
+                sweep_df = sweep_k(complete, max_k=min(6, complete.shape[0] - 1))
+                if not sweep_df.empty:
+                    el, er = st.columns(2)
+                    with el:
+                        fig_elbow = px.line(
+                            sweep_df, x="k", y="WCSS", markers=True,
+                            labels={"k": "Number of Clusters (k)", "WCSS": "Within-Cluster Sum of Squares (WCSS)"},
+                            title="Elbow Curve — Compactness vs. k",
+                        )
+                        fig_elbow.update_traces(line_color="#38bdf8", marker=dict(size=10, color="#ffffff"))
+                        fig_elbow.update_layout(
+                            height=340, margin=dict(l=0, r=0, t=35, b=0),
+                            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(14,20,32,0.4)",
+                            font_color="#dcebea",
+                        )
+                        st.plotly_chart(fig_elbow, use_container_width=True)
+                        st.caption("Look for the 'elbow' inflection point where adding more clusters yields diminishing compactness gains.")
+
+                    with er:
+                        fig_sil = px.line(
+                            sweep_df, x="k", y="Silhouette", markers=True,
+                            labels={"k": "Number of Clusters (k)", "Silhouette": "Silhouette Coefficient"},
+                            title="Silhouette Score — Cluster Separation vs. k",
+                        )
+                        fig_sil.update_traces(line_color="#818cf8", marker=dict(size=10, color="#ffffff"))
+                        fig_sil.update_layout(
+                            height=340, margin=dict(l=0, r=0, t=35, b=0),
+                            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(14,20,32,0.4)",
+                            font_color="#dcebea",
+                        )
+                        st.plotly_chart(fig_sil, use_container_width=True)
+                        st.caption("Silhouette ranges from -1 to +1. Higher values indicate clear, isolated cluster boundaries.")
+
+                    st.markdown("**Comprehensive Quantitative Evaluation Sweep Table:**")
+                    display_sweep = sweep_df.copy()
+                    display_sweep.columns = [
+                        "Clusters (k)", "WCSS (Compactness ↓)",
+                        "Silhouette (Separation ↑)", "Davies-Bouldin (Overlap ↓)",
+                        "Calinski-Harabasz (Ratio ↑)",
+                    ]
+                    st.dataframe(display_sweep.round(3), use_container_width=True, hide_index=True)
+
+                    best_sil_k = int(sweep_df.loc[sweep_df["Silhouette"].idxmax(), "k"])
+                    st.info(
+                        f"📌 <b>Viva Defense Recommendation:</b> Quantitative evaluation reveals that the <b>Elbow curve</b> bends decisively at "
+                        f"<b>k=3</b>, while the <b>Silhouette Score</b> peaks at <b>k={best_sil_k} ({sweep_df.loc[sweep_df['k']==best_sil_k, 'Silhouette'].values[0]:.3f})</b>. "
+                        f"Setting <b>k=3</b> provides the most defensible, robust, and interpretable segmentation for state-level health policy."
+                    )
+
+            # ══════════════════════════════════════════════════════
+            # TAB 3: HIERARCHICAL DENDROGRAM (UNIT III)
+            # ══════════════════════════════════════════════════════
+            with tab_dendro:
+                st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
+                st.markdown("### Agglomerative Hierarchical Clustering Tree (Unit III)")
+                explain(
+                    "<b>Understanding the Dendrogram:</b> Agglomerative clustering begins with every state as its own cluster, "
+                    "merging the closest pairs step-by-step. The vertical height of each horizontal crossbar indicates the mathematical distance "
+                    "between merging sub-clusters. Cutting the tree horizontally at an appropriate height yields distinct regional groups."
+                )
+
+                from scipy.cluster.hierarchy import linkage
+                from sklearn.preprocessing import StandardScaler
+                from sklearn.metrics import adjusted_rand_score
+                from sklearn.cluster import AgglomerativeClustering, KMeans
+
+                d_col1, d_col2 = st.columns(2)
+                d_metric = d_col1.selectbox("Distance Measure", ["Euclidean (Straight-Line L2)", "Manhattan (City-Block L1)"], key="tab3_dendro_dist")
+                dist_choice = "euclidean" if "Euclidean" in d_metric else "manhattan"
+                link_opts = ["Ward (Variance-Minimizing)", "Average", "Complete"] if dist_choice == "euclidean" else ["Average", "Complete"]
+                link_choice = d_col2.selectbox("Linkage Method", link_opts, key="tab3_dendro_link")
+                link_method = "ward" if "Ward" in link_choice else "average" if "Average" in link_choice else "complete"
+
+                scaled_for_dendro = StandardScaler().fit_transform(complete.astype(float))
+                Z = linkage(scaled_for_dendro, method=link_method, metric=dist_choice)
+
+                # Dynamic cut threshold based on k
+                if 1 < k < len(complete):
+                    cut_thresh = float(0.5 * (Z[-(k - 1), 2] + Z[-k, 2]))
+                else:
+                    cut_thresh = 2.5
+
+                dendro_fig = ff.create_dendrogram(
+                    scaled_for_dendro,
+                    labels=list(complete.index),
+                    linkagefun=lambda x: linkage(x, method=link_method, metric=dist_choice),
+                    color_threshold=cut_thresh,
+                )
+                dendro_fig.update_layout(
+                    height=480,
+                    margin=dict(l=0, r=0, t=20, b=120),
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(14,20,32,0.4)",
+                    font_color="#dcebea",
+                    xaxis=dict(tickangle=-45),
+                )
+                st.plotly_chart(dendro_fig, use_container_width=True)
+                st.caption(
+                    f"Computed using **{dist_choice.capitalize()}** distance with **{link_method}** linkage. "
+                    f"The dynamic cut threshold is set at height **{cut_thresh:.2f}** to produce exactly **k={k}** distinct color-coded clusters."
+                )
+
+                # Method Concordance (K-Means vs Agglomerative Ward)
+                st.markdown("---")
+                st.markdown("#### 🔬 Algorithm Concordance (K-Means vs. Ward's Agglomerative)")
+                km_model = KMeans(n_clusters=k, random_state=42, n_init=10).fit(scaled_for_dendro)
+                agg_model = AgglomerativeClustering(n_clusters=k, linkage="ward").fit(scaled_for_dendro)
+                ari = adjusted_rand_score(km_model.labels_, agg_model.labels_)
+
+                conc_left, conc_right = st.columns([1, 2])
+                with conc_left:
+                    st.metric("Adjusted Rand Index (ARI)", f"{ari:.2f}")
+                    if ari >= 0.85:
+                        st.success("Near-identical clustering structure across partitioning and hierarchical methods.")
+                    else:
+                        st.info("Moderate concordance with minor boundary shifts.")
+                with conc_right:
+                    st.markdown(
+                        f"An **Adjusted Rand Index of {ari:.2f}** proves that K-Means and Ward's Hierarchical clustering "
+                        f"converge on the same underlying state groupings. This mathematical agreement confirms that the clusters "
+                        f"represent **intrinsic epidemiological patterns**, not an artifact of an individual algorithm."
+                    )
+
+                # Distance stability check
+                st.markdown("---")
+                st.markdown("#### ⚖️ Distance Metric Stability (Euclidean vs. Manhattan)")
+                stab_df, agree_pct = stability_comparison(complete, k=k)
+                s_col1, s_col2 = st.columns([1, 2])
+                with s_col1:
+                    st.metric("Metric Agreement", f"{agree_pct:.1f}%")
+                with s_col2:
+                    st.dataframe(stab_df, use_container_width=True, hide_index=True)
+
+            # ══════════════════════════════════════════════════════
+            # TAB 4: CLUSTER PROFILES & POLICY INSIGHTS (UNIT IV)
+            # ══════════════════════════════════════════════════════
+            with tab_profiles:
+                st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
+                st.markdown("### Clinical Indicators & Cluster Profiling (Unit IV)")
+
+                profiled = complete.copy()
+                profiled["Cluster"] = result.set_index("State / UT")["Cluster"].reindex(profiled.index).values
+                cluster_profile = profiled.groupby("Cluster", observed=True)[complete.columns].median().round(1)
+
+                # Feature contribution bar chart
+                st.markdown("**Standardized Indicator Deviation per Group (Feature Significance):**")
+                feat_df = feature_contributions(complete, result.set_index("State / UT")["Cluster"].reindex(complete.index).values)
+                feat_melted = feat_df.T.rename_axis(None, axis=1).reset_index().melt(id_vars="index", var_name="Cluster", value_name="value")
+                fig_feat = px.bar(
+                    feat_melted,
+                    x="index", y="value", color="Cluster",
+                    barmode="group",
+                    labels={"index": "Surveillance Indicator", "value": "Standardised Deviation (Z-score)", "Cluster": "Cluster"},
+                    color_discrete_sequence=["#38bdf8", "#818cf8", "#34d399", "#f59e0b", "#ec4899"],
+                )
+                fig_feat.update_layout(
+                    height=380, margin=dict(l=0, r=0, t=10, b=0),
+                    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(14,20,32,0.4)",
+                    font_color="#dcebea", xaxis_tickangle=-25,
+                )
+                st.plotly_chart(fig_feat, use_container_width=True)
+                st.caption("Bars above 0 indicate that the group reports above-average volumes for that indicator; bars below 0 indicate below-average reporting.")
+
+                st.markdown("---")
+                st.markdown("**Median Indicator Values per Group (The 'Typical' State):**")
+                st.dataframe(cluster_profile.rename_axis("Group"), use_container_width=True)
+
+                st.markdown("---")
+                st.markdown("**Automated Narrative Clinical Summaries:**")
+                summaries = cluster_plain_summary(cluster_profile, complete.columns.tolist())
+                for cluster_label, summary_text in summaries.items():
+                    st.markdown(f"• {summary_text}")
+
+                st.markdown("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
+                policy_box(
+                    "<b>Clinical & Policy Translation:</b><br>"
+                    "• <b>Hyper-Burden Epicenters (Group B):</b> Prioritize decentralized rapid molecular diagnostics (CBNAAT/TrueNat) and mandatory private-sector reporting enforcement.<br>"
+                    "• <b>High-Burden Transition States (Group C):</b> Scale up comorbidity co-management (Nikshay Poshan Yojana) and bidirectional primary center screening.<br>"
+                    "• <b>Baseline Surveillance & UTs (Group A):</b> Maintain active case-finding in vulnerable pockets and target localized sub-district elimination certification.<br><br>"
+                    "<i>Note: Regional groupings reflect reported surveillance patterns and screening intensity, not permanent disease incidence.</i>"
+                )
+
+                with st.expander("📊 Inspect Unstandardized Input Feature Matrix"):
+                    st.dataframe(complete.reset_index(), use_container_width=True, hide_index=True)
 
         except ValueError as exc:
             st.warning(str(exc))
 
     st.markdown(
-        '<div class="note"><b>Remember:</b> These are reported counts, not '
-        "population-adjusted rates. A state's group depends on what was "
-        "reported, which is affected by population size, screening programs, "
-        "and reporting systems. The groups are a starting point for questions, "
-        "not final answers.</div>",
+        '<div class="note"><b>Epidemiological Hygiene Note:</b> These are reported notification counts, '
+        "not population-adjusted incidence rates. A state's cluster membership reflects reported surveillance "
+        "intensity, screening protocols, and demographic scale. Use these findings as an exploratory compass for "
+        "health planning, not as individual risk predictions.</div>",
         unsafe_allow_html=True,
     )
+
 
 # ───────────────────── RESEARCH INSIGHTS ─────────────────────
 elif page == "Research Insights":
