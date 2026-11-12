@@ -807,8 +807,32 @@ html_template = f"""<!DOCTYPE html>
   }}
   .twins-box strong {{ color: #94a3b8; }}
 
+  .insight-box {{
+    flex: 1;
+    background: rgba(255,255,255,0.025);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 0;
+  }}
+  .insight-title {{
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }}
+  .insight-text {{
+    font-size: 0.72rem;
+    color: #64748b;
+    line-height: 1.55;
+  }}
+  .insight-text strong {{ color: #94a3b8; }}
+
   .card-action-bar {{
-    margin-top: auto;
     padding-top: 10px;
     display: flex;
     gap: 8px;
@@ -1199,6 +1223,14 @@ html_template = f"""<!DOCTYPE html>
           Nearest Pattern Twins: Closest mathematical proximity to <strong>Gujarat & Rajasthan</strong>.
         </div>
 
+        <!-- PLAIN ENGLISH SUMMARY -->
+        <div class="insight-box" id="t-insight">
+          <div class="insight-title">💡 What this tells you</div>
+          <div class="insight-text" id="t-insight-text">
+            Maharashtra reports <strong>significantly more TB cases</strong> than the average Indian state. It is grouped with other high-burden states — meaning its health challenges are <strong>similar to states like Karnataka and Gujarat</strong>. Use "Explore Similarity" below to compare them side by side.
+          </div>
+        </div>
+
         <!-- ACTION BUTTONS -->
         <div class="card-action-bar">
           <button class="btn-action btn-print" onclick="window.print()" title="Export clinical summary">📄 Print Dossier</button>
@@ -1464,6 +1496,24 @@ html_template = f"""<!DOCTYPE html>
     // National Share
     const shareStr = el.getAttribute('data-share') || '0.00%';
     tShare.textContent = shareStr;
+
+
+    // Plain-English Insight
+    const tInsightText = document.getElementById('t-insight-text');
+    if (tInsightText) {{
+      let insightMsg = '';
+      const deltaAbs = Math.abs(delta).toFixed(0);
+      if (sName === 'Uttar Pradesh') {{
+        insightMsg = 'Uttar Pradesh has <strong>the most TB cases of any state</strong> in India — far above all others. It forms its own group because no other state comes close in scale.';
+      }} else if (clusterKey === 'Group B') {{
+        insightMsg = sName + ' is an <strong>outlier state</strong> — its TB numbers are so large that the AI placed it in a group of just two, separate from the rest of India.';
+      }} else if (clusterKey === 'Group C') {{
+        insightMsg = sName + ' is a <strong>high-burden state</strong> — it has significantly more TB cases than average and shares a similar pattern with other major states. Use "Explore Similarity" to compare.';
+      }} else {{
+        insightMsg = sName + ' has a <strong>relatively lower TB burden</strong> compared to major states. It is grouped with similar smaller-burden states across India.';
+      }}
+      tInsightText.innerHTML = insightMsg;
+    }}
 
     // Progress Bars
     const maxVal = 620325; // UP max
