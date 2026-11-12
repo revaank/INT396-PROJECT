@@ -634,24 +634,24 @@ html_template = f"""<!DOCTYPE html>
     width: 100%;
     height: 100%;
     max-height: 590px;
-    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.7));
+    filter: drop-shadow(0 0 40px rgba(0, 242, 254, 0.12)) drop-shadow(0 20px 45px rgba(0, 0, 0, 0.85));
   }}
   .state-shape {{
-    stroke: rgba(255, 255, 255, 0.12);
-    stroke-width: 0.6;
+    stroke: rgba(255, 255, 255, 0.28);
+    stroke-width: 0.85;
     stroke-linejoin: round;
     transition: fill 0.35s ease, stroke 0.2s ease, filter 0.2s ease;
     cursor: pointer;
   }}
   .state-shape:hover {{
-    stroke: #38bdf8;
-    stroke-width: 1.6;
-    filter: brightness(1.2);
+    stroke: #ffffff;
+    stroke-width: 1.8;
+    filter: brightness(1.25) drop-shadow(0 0 10px rgba(0, 242, 254, 0.5));
   }}
   .state-shape.selected {{
-    stroke: #38bdf8;
-    stroke-width: 2.2;
-    filter: brightness(1.3) drop-shadow(0 0 10px rgba(56, 189, 248, 0.5));
+    stroke: #00f2fe;
+    stroke-width: 2.4;
+    filter: brightness(1.35) drop-shadow(0 0 16px rgba(0, 242, 254, 0.85));
   }}
 
   /* SCROLL CUE */
@@ -1855,18 +1855,18 @@ html_template = f"""<!DOCTYPE html>
 
   // CHOROPLETH COLOR ENGINE
   const COLOR_PALETTE = {{
-    tier5: '#7dd3fc', // > 200k (UP, MH): Soft ice sky
-    tier4: '#38bdf8', // 100k - 200k (MP, RJ, BR, GJ): Azure sky
-    tier3: '#0284c7', // 40k - 100k (TN, WB, AP, HR, KA, OD, PB, AS, DL, TS, JH): Ocean blue
-    tier2: '#2b3a58', // 15k - 40k (CG, UK, KL, HP): Muted slate blue
-    tier1: '#1e2330', // 4k - 15k (JK, ML): Charcoal slate
-    tier0: '#151821'  // < 4k (NE states, UTs): Neutral graphite
+    tier5: '#00f2fe', // > 200k (UP, MH): Luminous Electric Cyan (Epicenters)
+    tier4: '#38bdf8', // 100k - 200k (MP, RJ, BR, GJ): Bright Sky Azure
+    tier3: '#0284c7', // 40k - 100k (TN, WB, AP, HR, KA, OD, PB, AS, DL, TS, JH): Vivid Cobalt Blue
+    tier2: '#2563eb', // 15k - 40k (CG, UK, KL, HP): Rich Royal Blue
+    tier1: '#3b82f6', // 4k - 15k (JK, ML): Visible Sapphire Blue
+    tier0: '#1e293b'  // < 4k (NE states, UTs): Distinct Slate Steel (never pitch-black)
   }};
 
   const CLUSTER_PALETTE = {{
-    'Group B': '#38bdf8', // Hyper-Burden Epicenters (Ice Azure)
-    'Group C': '#818cf8', // High-Burden Major States (Indigo Periwinkle)
-    'Group A': '#222a3d'  // Baseline Surveillance & UTs (Slate Graphite)
+    'Group B': '#00f2fe', // Hyper-Burden Epicenters (Electric Cyan)
+    'Group C': '#a855f7', // High-Burden Major States (Luminous Violet)
+    'Group A': '#10b981'  // Baseline Surveillance & UTs (Vibrant Emerald Teal)
   }};
 
   function getChoroplethColor(raw) {{
@@ -1885,21 +1885,21 @@ html_template = f"""<!DOCTYPE html>
       legEl.innerHTML = `
         <div class="legend-title">STATES GROUPED BY SIMILAR HEALTH PATTERNS (3 TEAMS)</div>
         <div class="legend-scale-row">
-          <span class="legend-item"><span class="legend-swatch" style="background:#38bdf8; box-shadow:0 0 6px rgba(56,189,248,0.5);"></span>Team B: Outlier scale (2 states)</span>
-          <span class="legend-item"><span class="legend-swatch" style="background:#818cf8;"></span>Team C: High burden (13 states)</span>
-          <span class="legend-item"><span class="legend-swatch" style="background:#222a3d; border:1px solid rgba(255,255,255,0.2);"></span>Team A: Lower burden (21 states)</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#00f2fe; box-shadow:0 0 8px rgba(0,242,254,0.6);"></span>Team B: Outlier scale (2 states)</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#a855f7; box-shadow:0 0 8px rgba(168,85,247,0.5);"></span>Team C: High burden (13 states)</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#10b981; box-shadow:0 0 8px rgba(16,185,129,0.5);"></span>Team A: Lower burden (21 states)</span>
         </div>
       `;
     }} else {{
       legEl.innerHTML = `
         <div class="legend-title">SURVEILLANCE SCALE (CASES · NAT'L MEDIAN: 30.5k)</div>
         <div class="legend-scale-row">
-          <span class="legend-item"><span class="legend-swatch" style="background:#151821; border:1px solid rgba(255,255,255,0.15);"></span>&lt;4k</span>
-          <span class="legend-item"><span class="legend-swatch" style="background:#1e2330;"></span>15k</span>
-          <span class="legend-item"><span class="legend-swatch" style="background:#2b3a58;"></span>40k</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#1e293b; border:1px solid rgba(255,255,255,0.3);"></span>&lt;4k</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#3b82f6;"></span>15k</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#2563eb;"></span>40k</span>
           <span class="legend-item"><span class="legend-swatch" style="background:#0284c7;"></span>100k</span>
           <span class="legend-item"><span class="legend-swatch" style="background:#38bdf8;"></span>200k</span>
-          <span class="legend-item"><span class="legend-swatch" style="background:#7dd3fc;"></span>&gt;200k</span>
+          <span class="legend-item"><span class="legend-swatch" style="background:#00f2fe; box-shadow:0 0 8px rgba(0,242,254,0.6);"></span>&gt;200k</span>
         </div>
       `;
     }}

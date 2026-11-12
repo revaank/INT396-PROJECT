@@ -467,7 +467,7 @@ def display_map(plot_data, value_col, label="Reported count", color_col=None, he
                 match, geojson=geo, locations="_geo_key",
                 featureidkey="properties.shapeName",
                 color=color_col, hover_name=raw_state_col,
-                color_discrete_sequence=["#00f2fe", "#4facfe", "#f6d365", "#fda085", "#ff5858", "#a8edea"],
+                color_discrete_sequence=["#00f2fe", "#a855f7", "#10b981", "#fbbf24", "#f43f5e", "#38bdf8"],
                 labels={color_col: "AI Cluster Group"},
             )
             fig.update_traces(
@@ -481,11 +481,11 @@ def display_map(plot_data, value_col, label="Reported count", color_col=None, he
                 featureidkey="properties.shapeName",
                 color=value_col,
                 color_continuous_scale=[
-                    [0.0, "#081b29"],
-                    [0.15, "#0d3b66"],
-                    [0.35, "#0077b6"],
-                    [0.65, "#00b4d8"],
-                    [0.85, "#48cae4"],
+                    [0.0, "#1e293b"],
+                    [0.15, "#3b82f6"],
+                    [0.35, "#2563eb"],
+                    [0.65, "#0284c7"],
+                    [0.85, "#38bdf8"],
                     [1.0, "#00f2fe"],
                 ],
                 hover_name=raw_state_col,
