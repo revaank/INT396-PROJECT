@@ -188,20 +188,6 @@ html_template = f"""<!DOCTYPE html>
     font-weight: 700;
     letter-spacing: 0.08em;
   }}
-  .hero-tagline-bar {{
-    font-size: 0.78rem;
-    color: #94a3b8;
-    text-align: center;
-    max-width: 620px;
-    line-height: 1.35;
-    margin-bottom: 10px;
-    background: rgba(14, 18, 26, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 6px 16px;
-    border-radius: 9999px;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  }}
 
   .header-actions {{
     display: flex;
@@ -1164,11 +1150,6 @@ html_template = f"""<!DOCTYPE html>
 
     <!-- CENTER: LIVING AESTHETIC INDIA MAP -->
     <main class="col-center">
-
-      <!-- HERO MISSION TAGLINE (SELF-CONTAINED IN CENTER, NEVER OVERLAPS) -->
-      <div class="hero-tagline-bar">
-        This tool helps you explore how TB spread differently across India's 36 states, using AI to find hidden patterns.
-      </div>
 
       <div class="map-layer-pills">
         <button class="layer-btn active" id="btn-dia" onclick="setLayer('dia')">🩺 TB + Diabetes</button>
