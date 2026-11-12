@@ -82,12 +82,27 @@ THEME = """
   background: rgba(15, 23, 42, 0.6) !important;
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
   border-radius: 10px !important;
-  padding: 10px 14px !important;
+  padding: 8px 14px !important;
   cursor: pointer !important;
   transition: all 0.22s ease !important;
   display: flex !important;
   align-items: center !important;
   width: 100% !important;
+}
+[data-testid="stSidebar"] [data-testid="stRadio"] label [data-testid="stMarkdownContainer"] {
+  width: 100% !important;
+}
+[data-testid="stSidebar"] [data-testid="stRadio"] label [data-testid="stMarkdownContainer"] p {
+  margin: 0 !important;
+  line-height: 1.25 !important;
+}
+[data-testid="stSidebar"] [data-testid="stRadio"] label [data-testid="stMarkdownContainer"] em {
+  display: block !important;
+  font-size: 0.70rem !important;
+  color: #94a3b8 !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  margin-top: 2px !important;
 }
 [data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
   background: rgba(0, 242, 254, 0.1) !important;
@@ -102,6 +117,9 @@ THEME = """
 [data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked) span {
   color: #00f2fe !important;
   font-weight: 700 !important;
+}
+[data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked) [data-testid="stMarkdownContainer"] em {
+  color: rgba(0, 242, 254, 0.8) !important;
 }
 [data-testid="stSidebar"] [data-testid="stRadio"] input[type="radio"],
 [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] > label > div:first-child {
@@ -332,6 +350,21 @@ pages = [
     "Find Help & About",
 ]
 
+page_subtitles = {
+    "Home": "National command map & overview",
+    "Explore India": "Inspect one indicator across every state",
+    "Compare States": "Compare multi-year state trajectories",
+    "State Pattern Groups": "AI clustering & finding health twins",
+    "Research Insights": "Detect unusual values & yearly trends",
+    "AI Explainer": "Plain-language data guides & concepts",
+    "TB Knowledge Centre": "Basic facts, symptoms & clinical risks",
+    "Find Help & About": "Official helplines, sources & limitations",
+}
+
+def format_nav(p: str) -> str:
+    sub = page_subtitles.get(p, "")
+    return f"**{p}**  \n*{sub}*"
+
 query_p = st.query_params.get("page", "Home")
 p_map = {
     "clusters": "State Pattern Groups",
@@ -357,7 +390,7 @@ with st.sidebar:
         """,
         unsafe_allow_html=True,
     )
-    page = st.radio("Navigation", pages, index=def_idx, label_visibility="collapsed")
+    page = st.radio("Navigation", pages, index=def_idx, format_func=format_nav, label_visibility="collapsed")
     st.markdown("---")
     st.caption(f"SURVEILLANCE WINDOW · {min(quality['years'])}–{max(quality['years'])}")
     st.caption("Official MoHFW Annual TB Surveillance Reports")
@@ -1419,7 +1452,7 @@ else:
 
     st.subheader("🆘 Need TB-related help?")
     st.markdown(
-        "- **India National TB Helpline:** Call your nearest government health facility\n"
+        "- **India National TB Helpline:** Call **1800-11-6666** (Toll-Free Ni-kshay Sampark) or contact your nearest government hospital\n"
         "- [India National TB Elimination Programme](https://tbcindia.mohfw.gov.in/)\n"
         "- [Ni-kshay portal](https://nikshay.in/) — India's TB case management system\n"
         "- Contact a government hospital or qualified doctor for symptoms or treatment"
