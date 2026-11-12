@@ -153,12 +153,12 @@ html_template = f"""<!DOCTYPE html>
   .brand-bar {{
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     background: rgba(14, 18, 26, 0.88);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
-    padding: 8px 18px;
-    border-radius: 14px;
+    padding: 7px 18px;
+    border-radius: 9999px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
     pointer-events: auto;
@@ -188,14 +188,19 @@ html_template = f"""<!DOCTYPE html>
     font-weight: 700;
     letter-spacing: 0.08em;
   }}
-  .brand-tagline {{
-    font-size: 0.68rem;
+  .hero-tagline-bar {{
+    font-size: 0.78rem;
     color: #94a3b8;
-    font-weight: 500;
-    margin-top: 2px;
-    letter-spacing: 0.01em;
-    max-width: 540px;
+    text-align: center;
+    max-width: 620px;
     line-height: 1.35;
+    margin-bottom: 10px;
+    background: rgba(14, 18, 26, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 6px 16px;
+    border-radius: 9999px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   }}
 
   .header-actions {{
@@ -1085,13 +1090,8 @@ html_template = f"""<!DOCTYPE html>
   <header class="top-header">
     <div class="brand-bar">
       <div class="brand-logo">◈</div>
-      <div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span class="brand-name">AeroTB</span>
-          <span class="brand-sub">/ INDIA REGIONAL INTELLIGENCE</span>
-        </div>
-        <div class="brand-tagline">This tool helps you explore how TB spread differently across India's 36 states, using AI to find hidden patterns.</div>
-      </div>
+      <div class="brand-name">AeroTB</div>
+      <span class="brand-sub">/ INDIA REGIONAL INTELLIGENCE</span>
     </div>
 
     <div class="header-actions">
@@ -1164,6 +1164,11 @@ html_template = f"""<!DOCTYPE html>
 
     <!-- CENTER: LIVING AESTHETIC INDIA MAP -->
     <main class="col-center">
+
+      <!-- HERO MISSION TAGLINE (SELF-CONTAINED IN CENTER, NEVER OVERLAPS) -->
+      <div class="hero-tagline-bar">
+        This tool helps you explore how TB spread differently across India's 36 states, using AI to find hidden patterns.
+      </div>
 
       <!-- FIRST-TIMER ONBOARDING HINT (dismissable) -->
       <div id="map-hint" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:10px;padding:9px 14px;margin-bottom:10px;font-size:0.82rem;color:#c0d8ff;display:flex;align-items:center;gap:10px;line-height:1.4;">
